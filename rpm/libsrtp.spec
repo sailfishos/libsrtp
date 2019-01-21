@@ -2,10 +2,9 @@ Name:           libsrtp
 Version:        2.1.0
 Release:        0
 Summary:        Secure Real-Time Transport Protocol (SRTP) library v2
-License:        BSD-3-Clause
+License:        BSD
 Group:          Development/Libraries/C and C++
 Url:            https://github.com/cisco/libsrtp
-
 Source:         https://github.com/cisco/libsrtp/archive/%name-%version.tar.gz
 BuildRequires:  pkgconfig(openssl) >= 1.0.1
 
@@ -21,7 +20,7 @@ itself can be found on the Secure RTP page.
 %package devel
 Summary:        Development files for the Secure Real-Time Transport Protocol (SRTP) library v2
 Group:          Development/Libraries/C and C++
-Requires:       %{name} = %version
+Requires:       %{name} = %{version}-%{release}
 
 %description devel
 libsrtp is an implementation of the Secure Real-time Transport
@@ -29,8 +28,16 @@ Protocol (SRTP) originally authored by Cisco Systems, Inc.
 
 This subpackage contains the development headers.
 
+%package doc
+Summary:   Documentation for %{name}
+Group:     Documentation
+Requires:  %{name} = %{version}-%{release}
+
+%description doc
+%{summary}.
+
 %prep
-%setup -qn libsrtp-%version/%{name}
+%setup -q -n %{name}-%{version}/%{name}
 
 %build
 %configure --enable-openssl
@@ -38,6 +45,9 @@ make shared_library %{?_smp_mflags}
 
 %install
 %make_install
+
+mkdir -p %{buildroot}%{_docdir}/%{name}-%{version}
+install -m0644 README.md %{buildroot}%{_docdir}/%{name}-%{version}
 
 %post   
 /sbin/ldconfig || :
@@ -47,13 +57,16 @@ make shared_library %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
-%doc LICENSE README.md
-%{_libdir}/libsrtp2.so.1
+%license LICENSE
+%{_libdir}/%{name}2.so.1
 
 %files devel
 %defattr(-,root,root)
 %dir %{_includedir}/srtp2/
 %{_includedir}/srtp2/*.h
-%{_libdir}/libsrtp2.so
-%{_libdir}/pkgconfig/libsrtp2.pc
+%{_libdir}/%{name}2.so
+%{_libdir}/pkgconfig/%{name}2.pc
 
+%files doc
+%defattr(-,root,root,-)
+%{_docdir}/%{name}-%{version}
